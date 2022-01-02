@@ -10,8 +10,8 @@ class Classificador:
         # e https://cnvrg.io/cnn-tensorflow/
 
         self.model = keras.Sequential([
-                                keras.layers.Conv2D(32, (3, 3), padding='n', activation="relu",
-                                                    input_shape=(32, 32, 1)),
+                                keras.layers.Conv2D(32, (3, 3), padding='same', activation="relu",
+                                                    input_shape=(120, 120, 3)),
 
                                 keras.layers.MaxPooling2D((2, 2), strides=2),
 
@@ -20,7 +20,7 @@ class Classificador:
 
                                 keras.layers.Flatten(),
                                 keras.layers.Dense(100, activation="relu"),
-                                keras.layers.Dense(10, activation="softmax")
+                                keras.layers.Dense(18, activation="softmax")
                                         ])
 
         self.model.summary()
