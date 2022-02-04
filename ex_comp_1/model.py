@@ -123,9 +123,20 @@ print('Critério "entropy", profundidade máxima 10')
 model = tree.DecisionTreeClassifier(criterion='entropy', max_depth=None)
 k_fold_cv(model)
 
+print('Testando gradient boosting:')
 
-# %%
-# Treinar
-grad_boosting = ensemble.GradientBoostingClassifier()
+print('Função de perda "deviance", quantidade de estimadores 100')
+model = ensemble.GradientBoostingClassifier(loss='deviance', n_estimators=100)
+k_fold_cv(model)
 
-# tree.plot_tree(decision_tree)
+print('Função de perda "deviance", quantidade de estimadores 200')
+model = ensemble.GradientBoostingClassifier(loss='deviance', n_estimators=200)
+k_fold_cv(model)
+
+print('Função de perda "exponential", quantidade de estimadores 100')
+model = ensemble.GradientBoostingClassifier(loss='exponential', n_estimators=100)
+k_fold_cv(model)
+
+print('Função de perda "exponential", quantidade de estimadores 200')
+model = ensemble.GradientBoostingClassifier(loss='exponential', n_estimators=200)
+k_fold_cv(model)
