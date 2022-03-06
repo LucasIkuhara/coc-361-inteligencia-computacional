@@ -37,9 +37,9 @@ Diz respeito a reação do cliente a campanhas publicitárias passadas. Denota s
 |---|---|---|
 | ID | Id único do usuário | Nominal
 | Year_Birth | Ano de nascimento do usuário | Quantitativa
-| Country | Localização do usuário | Quantitativa
+| Country | Localização do usuário | Qualitativa
 | Education | Nível de educação | Qualitativa
-| Marital_Status | Estado Civil do usuário | Quantitativa
+| Marital_Status | Estado Civil do usuário | Qualitativa
 | Income | Renda anual da residência do usuário | Quantitativa
 | Kidhome | Quantidade de crianças que moram com o usuário | Quantitativa
 | Teenhome | Quantidade de adolescentes que moram com o usuário | Quantitativa

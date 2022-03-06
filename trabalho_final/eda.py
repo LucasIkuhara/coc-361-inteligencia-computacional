@@ -62,15 +62,22 @@ print(f'''Após a remoção de linhas faltando dados, ou preenhidas incorretamen
 ficamos com {len(df)}  linhas.''')
 
 # Dropar coluna de ID
+print('Dropando a coluna de ID')
 df = df.drop('ID', axis=1)
 
+# Transformar datas em números
+print('Typecast de Dt_Customer para int')
+df["Dt_Customer"] = pd.to_datetime(df["Dt_Customer"]).dt.strftime("%Y%m%d").astype(int)
+
 # Retirar espaço do nome da coluna Income e transformar em valor numérico
+print('Typecast de Income para float')
 df["Income"] = df[" Income "].replace("[$, ]", "", regex=True).astype(float)
-df = df.drop("Income ", axis=1)
+df = df.drop(" Income ", axis=1)
 
 # Remoção de outliers encontrados
 df = df.drop(df[df['Year_Birth'] < 1900].index)  # Datas de nascimento antes de 1920
 df = df[df['Marital_Status'].isin(('Divorced', 'Single', 'Married', 'Together', 'Widow'))]
+print(f"Removendo outliers de 'Year_Birth' e 'Marital_Status'. Restaram {len(df)} linhas.")
 
 # Transformar datas em números
 
@@ -84,35 +91,51 @@ colunas_alvo_log = (
     'MntGoldProds'
     )
 
+print('\nRealizando transformação de Log em:')
 for coluna in colunas_alvo_log:
+    print(f'    - {coluna}')
     df[coluna] = (df[coluna] + 1).transform(np.log)
 
 
 # One-hot encode
 def encode_as_one_hot(df, nome_da_coluna):
-    # Referência: https://towardsdatascience.com/feature-engineering-for-machine-learning-3a5e293a5114#199b
+    # Referência:
+    # https://towardsdatascience.com/feature-engineering-for-machine-learning-3a5e293a5114#199b
     encoded_columns = pd.get_dummies(df[nome_da_coluna])
-    df = df.join(encoded_columns).drop('column', axis=1)
+    df = df.join(encoded_columns).drop(nome_da_coluna, axis=1)
 
     return df
 
 
+print('\nRealizando one-hot encode em:')
 colunas_alvo_ohe = (
-    ''
+    'Country',
+    'Education',
+    'Marital_Status'
 )
+
+for coluna in colunas_alvo_ohe:
+    print(f'    - {coluna}')
+    df = encode_as_one_hot(df, coluna)
+
 
 # Standartização
 def standardize(coluna):
     return (coluna - coluna.mean()) / coluna.std()
 
 
+print('\nRealizando standartização em:')
 colunas_alvo_std = df.columns
 for coluna in colunas_alvo_std:
+    print(f'    - {coluna}')
     df[coluna] = (df[coluna]).transform(standardize)
 
 # Retirar nulos, NaN e NA que podem ser gerados durante os ajustes
 df = df.dropna()
+print(f'Limpeza concluída. Restam {len(df)} linhas.')
 
 # %%
 # Salvar valores tratados para treino
-df.to_csv('treated_marketing_data.csv')
+filename = 'treated_marketing_data.csv'
+df.to_csv(filename)
+print(f'Dados tratados salvos em {filename}')
