@@ -115,6 +115,13 @@ Por último, as variáveis qualitativas como estado civil e país sofreram de ho
 
 Após identificados todos os tratamentos necessários no passo anterior, os dados foram tratados usando pandas. Além dos tratamentos descritos, ao final todas as colunas foram standartizadas, e o novo dataframe, pronto para treinamento, foi salvo.
 
+Após o tratamento, as features foram plotadas novamente. Exemplos pós tratamento:
+
+![income ajustado](./graphs/income_ajustado.png)
+![education ajustado](./graphs/education_ajustado.png)
+![num ajustado](./graphs/num_ajustado.png)
+![log ajustado](./graphs/log_ajustado.png)
+
 ##### Correlação
 
 Para visualizar a correlação das variáveis, foi usada a seguinte matriz de correlação.
@@ -122,3 +129,12 @@ Para visualizar a correlação das variáveis, foi usada a seguinte matriz de co
 ![Matriz de Correlaçãos](./graphs/matrix%20de%20correla%C3%A7%C3%A3o.png)
 
 Quase nenhum par apresenta módulo da correlação maior que 0.5, com notáveis exceções como compras feitas com catálogo e compras de carne. No entanto, não considerou-se que nenhuma das variáveis era redundante, e portanto, nenhuma foi removida.
+
+##### Modelos clássicos
+
+Os modelos clássicos utilizados para comparar os resultados com o modelo proposto no trabalho foram:
+
+- Árvores de decisão
+- Gradient Boosting
+- Support Vector Machines
+
