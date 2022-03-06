@@ -1,115 +1,118 @@
 # %%
-# Imports
-import matplotlib.pyplot as plt
-from numpy.lib.arraypad import _pad_dispatcher, pad
+# Importando pacotes
+import numpy as np
+import pandas as pd
+from sklearn import tree, ensemble
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
 import pandas as pd
 import numpy as np
-import os
 import plotly.express as px
 
+# %%
+# Ler dados
+df = pd.read_csv('marketing_data.csv')
+print('Sample data:')
+print(df.tail())
 
 # %%
-# Leitura do dataset
+# Visualização inicial
 
-df = pd.read_csv('../marketing_data.csv')
-df.head()
-
-# %%
-# Tratamento básico e estatísticas
-
-print('Estatistícas do Dataset', '='*50)
-print(f'O dataset contém {len(df)} linhas, das quais {len(df[df.duplicated()])} são duplicatas.')
-print(f'Cada uma das linhas tem {len(df.columns)} colunas.')
-
-# Limpando valores NaN, Null ou Blank.
-df = df.dropna()
-print(f'''Após a remoção de linhas faltando dados, ou preenhidas incorretamente (NaN, null..),
-ficamos com {len(df)}  linhas.''')
-
-# Remover coluna ID
-df = df.drop('ID', axis=1)
-print(f'''Além disso, a coluna ID foi removida, pois não agrega a nossa exploração.
-Dessa maneira, ficamos com {len(df.columns)} colunas.''')
-
-# Separando variáveis categóricas e quantitativas
-categoricas = ['Education', 'Marital_Status']
-
-# Fuções auxiliares
-# Referência: https://towardsdatascience.com/feature-engineering-for-machine-learning-3a5e293a5114
+# Configuração dos gráficos
+config = {
+    'displaylogo': False,
+    'scrollZoom': True
+}
 
 
-def standardize(coluna):
-    return (coluna - coluna.mean()) / coluna.std()
+# Função de plot
+def plot(subtitulo=False):
+
+    # Gerar um histograma por coluna
+    for coluna in df.columns:
+        titulo = coluna
+        if subtitulo:
+            titulo += f': {subtitulo}'
+
+        vis = px.histogram(df, x=coluna, color='Response',
+                           template='plotly_dark', title=titulo,
+                           marginal="violin")
+        vis.show(config=config)
 
 
-def one_hot_encode(df, coluna):
-    encoded = pd.get_dummies(df[coluna])
-    df = df.join(encoded).drop(coluna, axis=1)
-
-    return df
-
-
-# Standardização
-# for column in df:
-#     df['column'] = standardize(df['column'])
-
-
-# %%
-# Histograma de cada coluna
-
-base = os.getcwd()  # Salva endereço atual
-os.chdir('./histogramas/')  # Muda de diretório
-
-nao_criados = []  # Salvar referências de falhas
-
-# Gerar e salvar gráficos
-for column in df.columns:
-    try:
-        # Caso a coluna tenha poucas entradas únicas
-        # Usar a quantidade de entradas como quantidade de bins
-        # Caso o contrário, usar 10
-        if bins := len(df[column].unique()) > 10:
-            bins = 10
-
-        fig = px.histogram(df, x=column, nbins=bins, marginal="violin")
-        fig.show()
-        print(f"Gráfico acima: {column}")
-        fig.write_image(f"{column}.png")
-
-    except Exception:
-        nao_criados.append(column)
-
-# Listar eventuais falhas
-if len(nao_criados) > 0:
-    print(f'Gráficos não salvos: ')
-    for nome in nao_criados:
-        print(f'  -{nome}')
-
-os.chdir(base)  # Volta ao diretório original
+plot()
 
 # %%
 # Correlação entre variáveis
 
-f = plt.figure(figsize=(19, 15))
-plt.matshow(df.corr(), fignum=f.number)
-plt.xticks(range(df.select_dtypes(['number']).shape[1]),
-           df.select_dtypes(['number']).columns, fontsize=14, rotation=45)
-plt.yticks(range(df.select_dtypes(['number']).shape[1]),
-           df.select_dtypes(['number']).columns, fontsize=14)
-cb = plt.colorbar(extend='both')
-plt.clim(-1, 1)
-cb.ax.tick_params(labelsize=14)
-plt.title('Matriz de Correlação', fontsize=16, pad=80)
-plt.savefig('matrix_de_correlacao.png')
+fig = px.imshow(df.corr(), template='plotly_dark',
+                text_auto=True, title='Matiz de Correlação',
+                color_continuous_scale=px.colors.sequential.Agsunset,
+                range_color=(-1, 1))
 
-# Referência: https://stackoverflow.com/questions/29432629/plot-correlation-matrix-using-pandas
-# svm, regressão log, arvores (obrigatório)[
+fig.show(config=config)
 
-# TODO
-# Ajuste log de váriaveis esparças
-# encoding ciclico de datas
-# stardardização de TUDO (após log e encodings)
-# vizualização em função das target vars
-# retirada de variaveis binarias da matriz de correlação
-# vizualização de concorrência de variáveis binárias
 # %%
+# Limpeza e tratamento de dados
+# Referência: https://towardsdatascience.com/feature-engineering-for-machine-learning-3a5e293a5114
+
+# Retirar nulos, NaN e NA
+df = df.dropna()
+print(f'''Após a remoção de linhas faltando dados, ou preenhidas incorretamente (NaN, null..),
+ficamos com {len(df)}  linhas.''')
+
+# Dropar coluna de ID
+df = df.drop('ID', axis=1)
+
+# Retirar espaço do nome da coluna Income e transformar em valor numérico
+df["Income"] = df[" Income "].replace("[$, ]", "", regex=True).astype(float)
+df = df.drop("Income ", axis=1)
+
+# Remoção de outliers encontrados
+df = df.drop(df[df['Year_Birth'] < 1900].index)  # Datas de nascimento antes de 1920
+df = df[df['Marital_Status'].isin(('Divorced', 'Single', 'Married', 'Together', 'Widow'))]
+
+# Transformar datas em números
+
+# Transformações de Log
+colunas_alvo_log = (
+    'MntWines',
+    'MntFruits',
+    'MntMeatProducts',
+    'MntFishProducts',
+    'MntSweetProducts',
+    'MntGoldProds'
+    )
+
+for coluna in colunas_alvo_log:
+    df[coluna] = (df[coluna] + 1).transform(np.log)
+
+
+# One-hot encode
+def encode_as_one_hot(df, nome_da_coluna):
+    # Referência: https://towardsdatascience.com/feature-engineering-for-machine-learning-3a5e293a5114#199b
+    encoded_columns = pd.get_dummies(df[nome_da_coluna])
+    df = df.join(encoded_columns).drop('column', axis=1)
+
+    return df
+
+
+colunas_alvo_ohe = (
+    ''
+)
+
+# Standartização
+def standardize(coluna):
+    return (coluna - coluna.mean()) / coluna.std()
+
+
+colunas_alvo_std = df.columns
+for coluna in colunas_alvo_std:
+    df[coluna] = (df[coluna]).transform(standardize)
+
+# Retirar nulos, NaN e NA que podem ser gerados durante os ajustes
+df = df.dropna()
+
+# %%
+# Salvar valores tratados para treino
+df.to_csv('treated_marketing_data.csv')

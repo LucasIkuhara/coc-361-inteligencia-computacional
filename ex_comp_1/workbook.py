@@ -11,7 +11,7 @@ import plotly.express as px
 
 # %%
 # Ler dados
-df = pd.read_csv('../star-dataset/Star3642_balanced.csv')
+df = pd.read_csv('./star-dataset/Star3642_balanced.csv')
 print('Sample data:')
 print(df.tail())
 
