@@ -134,7 +134,34 @@ Quase nenhum par apresenta módulo da correlação maior que 0.5, com notáveis 
 
 Os modelos clássicos utilizados para comparar os resultados com o modelo proposto no trabalho foram:
 
+- Classificação Baynesiana
 - Árvores de decisão
+- Random Forest
 - Gradient Boosting
 - Support Vector Machines
+
+Foram utilizadas implementações da biblioteca Scikit Learn para todos modelos descritos acima.
+
+###### Árvores de Decisão
+
+As árvores de decisão foram testadas, variando os hiperparâmetros de critério entre 'Gini' e 'Entropy', ambas com a profundidade ilimitada.
+
+###### Gradient Boosting
+Os modelos de Gradient Boosting foram testados variando os hiperparâmetros da função de perda entre 'deviance' e 'exponential', com 100 estimadores cada.
+
+###### Support Vector Machines
+Os modelos de SVM foram testados variando os parâmetros de C. Foram testados os valores C=1 e C=2.s
+
+###### Random Forest
+Os modelos de Random Forest foram testadas, variando os hiperparâmetros de critério entre 'Gini' e 'Entropy', ambas com 100 estimadores.
+
+###### Classificador Baynesiano
+Os modelo utilizado foi um classificador Gaussiano (Gaussian Naive Bayes), e foi testado com os valores de smoothing de $1^{-9}$ e $1^{-11}$.
+
+##### Modelo proposto
+
+O modelo proposto é uma rede neural, mais especificamente uma rede de perceptrons multi-camada (MLP). A rede foi implementada utilizando Keras, uma API de alto nível para o framework Tensorflow.
+
+##### Critérios de avaliação
+
 
