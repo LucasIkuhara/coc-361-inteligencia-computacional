@@ -1,5 +1,6 @@
 # %%
 # Importando pacotes
+from operator import index
 import numpy as np
 import pandas as pd
 from sklearn import tree, ensemble
@@ -137,5 +138,5 @@ print(f'Limpeza concluída. Restam {len(df)} linhas.')
 # %%
 # Salvar valores tratados para treino
 filename = 'treated_marketing_data.csv'
-df.to_csv(filename)
+df.to_csv(filename, index=False)
 print(f'Dados tratados salvos em {filename}')
