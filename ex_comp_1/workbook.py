@@ -119,7 +119,7 @@ print('Critério "entropy", profundidade máxima 10')
 model = tree.DecisionTreeClassifier(criterion='entropy', max_depth=10)
 k_fold_cv(model)
 
-print('Critério "entropy", profundidade máxima 10')
+print('Critério "entropy", profundidade máxima ilimitada')
 model = tree.DecisionTreeClassifier(criterion='entropy', max_depth=None)
 k_fold_cv(model)
 

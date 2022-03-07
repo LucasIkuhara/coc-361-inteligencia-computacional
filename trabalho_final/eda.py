@@ -1,6 +1,5 @@
 # %%
 # Importando pacotes
-from operator import index
 import numpy as np
 import pandas as pd
 from sklearn import tree, ensemble
@@ -41,7 +40,7 @@ def plot(subtitulo=False):
         vis.show(config=config)
 
 
-plot()
+# plot()
 
 # %%
 # Correlação entre variáveis
@@ -126,7 +125,14 @@ def standardize(coluna):
 
 
 print('\nRealizando standartização em:')
-colunas_alvo_std = df.columns
+colunas_alvo_std = (
+    'Year_Birth', 'Kidhome', 'Teenhome', 'Dt_Customer', 'Recency',
+    'MntWines', 'MntFruits', 'MntMeatProducts', 'MntFishProducts',
+    'MntSweetProducts', 'MntGoldProds', 'NumDealsPurchases',
+    'NumWebPurchases', 'NumCatalogPurchases', 'NumStorePurchases',
+    'NumWebVisitsMonth', 'Income'
+)
+
 for coluna in colunas_alvo_std:
     print(f'    - {coluna}')
     df[coluna] = (df[coluna]).transform(standardize)
