@@ -3,11 +3,8 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from sklearn.model_selection import cross_val_score, KFold
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import os
-from random import shuffle
 
 # %%
 # Ler dados
@@ -38,11 +35,11 @@ def k_fold_cv(model, k=10):
 
 class ModelFactory:
 
-    def large():
+    @staticmethod
+    def large() -> models.Sequential:
 
         large_model = models.Sequential()
-        large_model.add(layers.Flatten(input_shape=(1, 41)))
-        large_model.add(layers.Dense(41, input_shape=(1, 41), activation='relu'))
+        large_model.add(layers.Dense(41, activation='relu'))
         large_model.add(layers.Dense(41, activation='relu'))
         large_model.add(layers.Dense(41, activation='relu'))
         large_model.add(layers.Dense(1, activation='sigmoid'))
@@ -51,10 +48,10 @@ class ModelFactory:
 
         return large_model
 
-    def medium():
+    @staticmethod
+    def medium() -> models.Sequential:
 
         medium_model = models.Sequential()
-        medium_model.add(layers.Flatten(input_shape=(1, 41)))
         medium_model.add(layers.Dense(41, activation='relu'))
         medium_model.add(layers.Dense(41, activation='relu'))
         medium_model.add(layers.Dense(1, activation='sigmoid'))
@@ -63,10 +60,10 @@ class ModelFactory:
 
         return medium_model
 
-    def small():
+    @staticmethod
+    def small() -> models.Sequential:
 
         small_model = models.Sequential()
-        small_model.add(layers.Flatten(input_shape=(1, 41)))
         small_model.add(layers.Dense(41, activation='relu'))
         small_model.add(layers.Dense(1, activation='sigmoid'))
 
@@ -84,13 +81,14 @@ factory = ModelFactory()
 # Referência:
 # https://github.com/christianversloot/machine-learning-articles/blob/main/how-to-use-k-fold-cross-validation-with-keras.md
 def train(model_factory_method):
-    kfold = KFold(10)
+
+    kfold = KFold(10, shuffle=False)
     accuracy_tacker = np.array([])
     loss_tracker = np.array([])
     predictions = np.array([])
     prediction_targets = np.array([])
 
-    # Dvisão em folds
+    # Divisão em folds
     for train, test in kfold.split(training_data, training_targets):
 
         model = model_factory_method()
@@ -102,7 +100,9 @@ def train(model_factory_method):
                   verbose=0)
 
         # Métricas
-        scores = model.evaluate(training_data[test], training_targets[test], verbose=0)
+        scores = model.evaluate(training_data[test],
+                                training_targets[test],
+                                verbose=0)
         accuracy_tacker = np.append(accuracy_tacker, scores[1])
         loss_tracker = np.append(loss_tracker, scores[0])
 
