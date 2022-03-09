@@ -9,8 +9,6 @@ import numpy as np
 import os
 from random import shuffle
 
-from torch import seed
-
 # %%
 # Ler dados
 df = pd.read_csv('treated_marketing_data.csv')
@@ -38,33 +36,46 @@ def k_fold_cv(model, k=10):
 # %%
 # Modelos
 
-print('Modelo Grande com de 5.2k parâmetros')
-large_model = models.Sequential()
-large_model.add(layers.Flatten(input_shape=(1, 41)))
-large_model.add(layers.Dense(41, input_shape=(1, 41), activation='relu'))
-large_model.add(layers.Dense(41, activation='relu'))
-large_model.add(layers.Dense(41, activation='relu'))
-large_model.add(layers.Dense(1, activation='sigmoid'))
+class ModelFactory:
 
-print('Modelo Médio com de 3.5k parâmetros')
-medium_model = models.Sequential()
-medium_model.add(layers.Flatten(input_shape=(1, 41)))
-medium_model.add(layers.Dense(41, activation='relu'))
-medium_model.add(layers.Dense(41, activation='relu'))
-medium_model.add(layers.Dense(1, activation='sigmoid'))
+    def large():
 
-print('Modelo Pequeno com de 1.7k parâmetros')
-small_model = models.Sequential()
-small_model.add(layers.Flatten(input_shape=(1, 41)))
-small_model.add(layers.Dense(41, activation='relu'))
-small_model.add(layers.Dense(1, activation='sigmoid'))
+        large_model = models.Sequential()
+        large_model.add(layers.Flatten(input_shape=(1, 41)))
+        large_model.add(layers.Dense(41, input_shape=(1, 41), activation='relu'))
+        large_model.add(layers.Dense(41, activation='relu'))
+        large_model.add(layers.Dense(41, activation='relu'))
+        large_model.add(layers.Dense(1, activation='sigmoid'))
 
-# %%
-# Compilação dos modelos
+        large_model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
-large_model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-medium_model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-small_model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+        return large_model
+
+    def medium():
+
+        medium_model = models.Sequential()
+        medium_model.add(layers.Flatten(input_shape=(1, 41)))
+        medium_model.add(layers.Dense(41, activation='relu'))
+        medium_model.add(layers.Dense(41, activation='relu'))
+        medium_model.add(layers.Dense(1, activation='sigmoid'))
+
+        medium_model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+
+        return medium_model
+
+    def small():
+
+        small_model = models.Sequential()
+        small_model.add(layers.Flatten(input_shape=(1, 41)))
+        small_model.add(layers.Dense(41, activation='relu'))
+        small_model.add(layers.Dense(1, activation='sigmoid'))
+
+        small_model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+
+        return small_model
+
+
+factory = ModelFactory()
 
 # %%
 # Treinamento em validação cruzada
@@ -72,7 +83,7 @@ small_model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
 # Referência:
 # https://github.com/christianversloot/machine-learning-articles/blob/main/how-to-use-k-fold-cross-validation-with-keras.md
-def train(model):
+def train(model_factory_method):
     kfold = KFold(10)
     accuracy_tacker = np.array([])
     loss_tracker = np.array([])
@@ -81,6 +92,8 @@ def train(model):
 
     # Dvisão em folds
     for train, test in kfold.split(training_data, training_targets):
+
+        model = model_factory_method()
 
         model.fit(training_data[train],
                   training_targets[train],
@@ -99,9 +112,6 @@ def train(model):
         prediction_targets = np.append(prediction_targets, training_targets[test])
         predictions = np.append(predictions, model.predict(training_data[test]))
 
-        # Limpar os pesos
-        # TODO
-
     print(f'Acurácia: {accuracy_tacker.mean():.3f}, Desvio padrão: {accuracy_tacker.std():.3f}', end='\n\n')
     print(accuracy_tacker)
     return(accuracy_tacker.mean(), accuracy_tacker.std(), predictions, prediction_targets)
@@ -109,12 +119,15 @@ def train(model):
 
 # %%
 # Modelo Pequeno
-results = train(small_model)
+print('Modelo Pequeno com de 1.7k parâmetros')
+results = train(factory.small)
 
 # %%
 # Modelo Médio
-results = train(medium_model)
+print('Modelo Médio com de 3.5k parâmetros')
+results = train(factory.medium)
 
 # %%
 # Modelo Grande
-results = train(large_model)
+print('Modelo Grande com de 5.2k parâmetros')
+results = train(factory.large)
