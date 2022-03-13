@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn import tree, ensemble, svm, naive_bayes
 from sklearn.model_selection import KFold
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 import pandas as pd
 import numpy as np
@@ -196,3 +197,21 @@ model = naive_bayes.GaussianNB(var_smoothing=float('1e-11'))
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
 plot_confusion(conf_matrix, 'Gaussian Naive Bayes (1e-11)')
+
+
+# %%
+# Logistic Regression
+print('Testando Regressão Logística:')
+
+print('Solver lbfgs')
+model = LogisticRegression(solver='lbfgs', max_iter=5000)
+result = k_fold_cv(model)
+conf_matrix = confusion_matrix(result[3], result[2])
+plot_confusion(conf_matrix, 'Regressão Logística (lbfgs)')
+
+
+print('Solver SAGA')
+model = LogisticRegression(solver='sag', max_iter=5000)
+result = k_fold_cv(model)
+conf_matrix = confusion_matrix(result[3], result[2])
+plot_confusion(conf_matrix, 'Regressão Logística (saga)')
