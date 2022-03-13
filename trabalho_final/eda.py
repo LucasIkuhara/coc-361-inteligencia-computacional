@@ -142,6 +142,12 @@ df = df.dropna()
 print(f'Limpeza concluída. Restam {len(df)} linhas.')
 
 # %%
+# Balaceamento
+df_pos = df[df['Response'] == 1]
+df_neg = df[df['Response'] == 0].sample(len(df_pos), random_state=0)
+df = pd.concat([df_pos, df_neg])
+
+# %%
 # Salvar valores tratados para treino
 filename = 'treated_marketing_data.csv'
 df.to_csv(filename, index=False)
