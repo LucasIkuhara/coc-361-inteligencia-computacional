@@ -45,3 +45,32 @@ def plot_confusion(confusion_matrix, title: str = 'Confusion Matrix'):
         'displaylogo': False,
         'scrollZoom': True
     })
+
+
+# Calcular precisão, recall e F1
+def additional_metrics(confusion_matrix):
+    '''
+    # additional_metrics
+    Calcula a precisão, recall e score F1 a partir de uma
+    matriz de confusão.
+
+    Args:
+        confusion_matriz: matriz de confusão do modelo
+
+    Returns:
+        tuple: (precision, recall, f1)
+    '''
+    tp, fn = confusion_matrix[0]
+    fp, fn = confusion_matrix[1]
+
+    precision = tp/(tp+fp)
+    recall = tp/(tp+fn)
+    f1 = 2*precision*recall / (precision + recall)
+
+    print(f'''
+    Precisão: {precision}
+    Recall: {recall}
+    F1 Score: {f1}
+    ''')
+
+    return (precision, recall, f1)
