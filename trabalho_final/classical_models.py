@@ -6,7 +6,7 @@ from sklearn import tree, ensemble, svm, naive_bayes
 from sklearn.model_selection import KFold
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
-from utils import plot_confusion
+from utils import plot_confusion, additional_metrics
 import pandas as pd
 import numpy as np
 
@@ -71,6 +71,7 @@ print('Critério "gini", profundidade máxima ilimitada')
 model = tree.DecisionTreeClassifier(criterion='gini', max_depth=None)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Árvore de Decisão (gini)')
 
 
@@ -78,6 +79,7 @@ print('Critério "entropy", profundidade máxima ilimitada')
 model = tree.DecisionTreeClassifier(criterion='entropy', max_depth=None)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Árvore de Decisão (entropy)')
 
 
@@ -89,12 +91,14 @@ print('Função de perda "deviance", quantidade de estimadores 100')
 model = ensemble.GradientBoostingClassifier(loss='deviance', n_estimators=100)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Gradient Boosting (deviance)')
 
 print('Função de perda "exponential", quantidade de estimadores 100')
 model = ensemble.GradientBoostingClassifier(loss='exponential', n_estimators=100)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Gradient Boosting (exponential)')
 
 
@@ -106,6 +110,7 @@ print('Classificador com C=1')
 model = svm.SVC(C=1)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Support Vector Machine (C=1)')
 
 
@@ -113,6 +118,7 @@ print('Classificador com C=2')
 model = svm.SVC(C=2)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Support Vector Machine (C=2)')
 
 
@@ -124,12 +130,14 @@ print('Critério "gini", quantidade de estimadores 100')
 model = ensemble.RandomForestClassifier(criterion='gini', n_estimators=100)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Random Forest (gini)')
 
 print('Critério "entropy", quantidade de estimadores 100')
 model = ensemble.RandomForestClassifier(criterion='entropy', n_estimators=100)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Random Forest (entropy)')
 
 
@@ -141,6 +149,7 @@ print('Var smoothing = 1e-9')
 model = naive_bayes.GaussianNB()
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Gaussian Naive Bayes (1e-9)')
 
 
@@ -148,6 +157,7 @@ print('Var smoothing = 1e-11')
 model = naive_bayes.GaussianNB(var_smoothing=float('1e-11'))
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Gaussian Naive Bayes (1e-11)')
 
 
@@ -159,6 +169,7 @@ print('Solver lbfgs')
 model = LogisticRegression(solver='lbfgs', max_iter=5000)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Regressão Logística (lbfgs)')
 
 
@@ -166,4 +177,5 @@ print('Solver SAGA')
 model = LogisticRegression(solver='sag', max_iter=5000)
 result = k_fold_cv(model)
 conf_matrix = confusion_matrix(result[3], result[2])
+additional_metrics(conf_matrix)
 plot_confusion(conf_matrix, 'Regressão Logística (saga)')
