@@ -36,7 +36,7 @@ def plot(subtitulo=False):
 
         vis = px.histogram(df, x=coluna, color='Response',
                            template='plotly_dark', title=titulo,
-                           marginal="violin")
+                           marginal="violin", histnorm='probability')
         vis.show(config=config)
 
 
